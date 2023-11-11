@@ -19,7 +19,7 @@ public class ServiceDAO {
     private final Service currentService;
     private final List<Service> registeredServices;
 
-    private final static String SERVICE_NAME = "kpj.jaroslavchladek";
+    public final static String SERVICE_NAME = "kpj.jaroslavchladek";
     // An anti-collision random generated port
     private final static String SERVICE_PORT = "25695";
 

@@ -1,5 +1,6 @@
 package cz.kpjhomework.serviceregistry.controller;
 
+import cz.kpjhomework.serviceregistry.dao.ServiceDAO;
 import cz.kpjhomework.serviceregistry.model.Service;
 import cz.kpjhomework.serviceregistry.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ServiceController {
 
     private final ServiceService serviceService;
+    private final ServiceDAO serviceDAO;
 
     @Autowired
-    public ServiceController(ServiceService service) {
+    public ServiceController(final ServiceService service, final ServiceDAO serviceDAO) {
         this.serviceService = service;
+        this.serviceDAO = serviceDAO;
     }
 
     @GetMapping("/services/")
@@ -46,7 +49,7 @@ public class ServiceController {
     @PostMapping("/services/register")
     public void registerSelf() {
         try {
-            serviceService.sendServiceInformationFanout();
+            serviceService.sendServiceInformationFanout(serviceDAO.getCurrentService().toString());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -8,18 +8,20 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+import org.antlr.v4.runtime.misc.NotNull;
+import org.hibernate.annotations.NotFound;
+
 @Getter
 @Entity
 public class Service {
 
     @Id
-    @GeneratedValue
     private Integer id;
     private String name;
     private String port;
     private LocalDateTime registerTime;
 
-    public Service(Integer id, String name, String port, LocalDateTime registerTime) {
+    public Service(@NotNull Integer id, @NotNull String name, @NotNull String port, @NotNull LocalDateTime registerTime) {
         this.id = id;
         this.name = name;
         this.port = port;

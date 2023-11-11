@@ -3,14 +3,22 @@ package cz.kpjhomework.serviceregistry.service;
 import com.rabbitmq.client.*;
 import cz.kpjhomework.serviceregistry.dao.ServiceDAO;
 import cz.kpjhomework.serviceregistry.model.Service;
+
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 
 @org.springframework.stereotype.Service
+@Slf4j
 public class ServiceService {
 
     private final ServiceDAO serviceDAO;
@@ -20,7 +28,7 @@ public class ServiceService {
     public ServiceService(ServiceDAO serviceDAO) {
         this.serviceDAO = serviceDAO;
         try {
-            sendServiceInformationFanout();
+            sendServiceInformationFanout(serviceDAO.getCurrentService().toString());
             receiveMessages();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -39,10 +47,12 @@ public class ServiceService {
         channel.queueBind(queueName, EXCHANGE_NAME, "");
 
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+        log.info(" [*] Waiting for messages. ");
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [x] Received '" + message + "'");
+            log.info(" [x] Received '" + message + "'");
             addUniqueService(message);
         };
         channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
@@ -61,11 +71,12 @@ public class ServiceService {
             }
             catch (Exception e) {
                 System.out.println("[ERROR] Attempt to register an invalid service name");
+                log.error("[ERROR] Attempt to register an invalid service name");
             }
         }
     }
 
-    public void sendServiceInformationFanout() throws Exception {
+    public void sendServiceInformationFanout(String message) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         //factory.setPort(Integer.parseInt(serviceDAO.getCurrentService().getPort()));
@@ -74,11 +85,10 @@ public class ServiceService {
              Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
 
-            String message = serviceDAO.getCurrentService().toString();
-
             channel.basicPublish(EXCHANGE_NAME, "", null,
                                     message.getBytes("UTF-8"));
             System.out.println(" [x] Sent '" + message + "'");
+            log.info(" [x] Sent '" + message + "'");
         }
     }
 
