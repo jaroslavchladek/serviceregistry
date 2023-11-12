@@ -36,7 +36,7 @@ public class ServiceServiceTest {
             log.info("[ERROR] " + e.getMessage());
         }
         List<Service> services = service.getRegisteredServices();
-        System.out.println(services.toString());
+        Assertions.assertEquals(services.size(), 3 + 1);
     }
 
 }

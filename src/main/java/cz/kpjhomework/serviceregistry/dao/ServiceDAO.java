@@ -28,16 +28,17 @@ public class ServiceDAO {
         this.serviceRepository = serviceRepository;
         registeredServices = new ArrayList<>();
         currentService = new Service(new Random().nextInt(), SERVICE_NAME, SERVICE_PORT, LocalDateTime.now());
-        serviceRepository.save(currentService);
+        this.serviceRepository.save(currentService);
+        registeredServices.add(currentService);
     }
 
     public void addService(Service service) {
         registeredServices.add(service);
-        serviceRepository.save(service);
+        this.serviceRepository.save(service);
     }
 
     public List<Service> getRegisteredServices() {
-        return serviceRepository.findAll();
+        return registeredServices;
     }
 
 }

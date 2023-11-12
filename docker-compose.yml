@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  serviceregistry:
+    image: "serviceregistry"
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      RABBIT_ADDRESS: "amqp://guest:guest@host.docker.internal:5672/"
+
+  rabbitMQ:
+    image: rabbitmq:3.13.0-rc.1-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
