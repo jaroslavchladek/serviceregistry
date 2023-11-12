@@ -8,13 +8,18 @@ Make sure there is a running Docker daemon instance on your machine.
 dockerd
 ```
 
-Then you may successfully run the application.
+Then you may successfully generate a runnable *JAR* file of the application.
 
 ```bash
 mvn clean && install
 ```
 
 The application will automatically create a Docker container running the application with a RabbitMQ subcontainer.
+
+```bash
+java <application-name>.jar
+```
+
 Now you are free to make requests as per the OpenAPI.
 
 ```
